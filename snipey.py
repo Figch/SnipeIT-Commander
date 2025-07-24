@@ -37,7 +37,7 @@ def read_config():
     return user_id, api_base_url, api_token
 
 def checkin(api_base_url, api_token, asset_id, user_id):
-    api_url = f"{api_base_url}/{asset_id}/checkin"
+    api_url = f"{api_base_url}/hardware/{asset_id}/checkin"
     data = {"status_id": 2, "assigned_user": user_id}
     try:
         response = requests.post(api_url, headers={"Authorization": f"Bearer {api_token}"}, json=data, verify=False)
@@ -50,7 +50,7 @@ def checkin(api_base_url, api_token, asset_id, user_id):
         print(f"Error: Unable to check in asset. Status Code: {response.status_code}, Response: {response.text}")
 
 def checkout(api_base_url, api_token, asset_id, user_id):
-    api_url = f"{api_base_url}/{asset_id}/checkout"
+    api_url = f"{api_base_url}/hardware/{asset_id}/checkout"
     data = {"status_id": 2, "checkout_to_type": "user", "assigned_user": user_id}
     try:
         response = requests.post(api_url, headers={"Authorization": f"Bearer {api_token}"}, json=data, verify=False)
@@ -63,7 +63,7 @@ def checkout(api_base_url, api_token, asset_id, user_id):
         print(f"Error: Unable to checkout asset. Status Code: {response.status_code}, Response: {response.text}")
 
 def status(api_base_url, api_token):
-    api_url = f"{api_base_url}"
+    api_url = f"{api_base_url}/hardware"
     params = {"limit": 500, "offset": 0}
     try:
         response = requests.get(api_url, headers={"Authorization": f"Bearer {api_token}"}, params=params, verify=False, timeout=2)
@@ -86,7 +86,7 @@ def status(api_base_url, api_token):
         print(f"Error: Unable to retrieve assets. Status Code: {response.status_code}")
 
 def watch(api_base_url, api_token):
-    api_url = f"{api_base_url}"
+    api_url = f"{api_base_url}/hardware"
     def fetch_current_status():
         params = {"limit": 50, "offset": 0}
         try:
