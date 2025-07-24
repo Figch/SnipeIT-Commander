@@ -11,8 +11,6 @@ from datetime import datetime
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def get_user_id(api_base_url, api_token):
-    # remove the endpoint part from the base url
-    api_base_url = api_base_url.rsplit('/', 1)[0]
     api_url = f"{api_base_url}/users/me"
     try:
         response = requests.get(api_url, headers={"Authorization": f"Bearer {api_token}"}, verify=False)
@@ -33,6 +31,8 @@ def read_config():
     config.read('.config')
     api_base_url = config.get('api', 'url', fallback='https://default.api.url')
     api_token = config.get('api', 'access_token', fallback='')
+    # remove the endpoint part from the base url
+    api_base_url = api_base_url.rsplit('/', 1)[0]
     user_id = get_user_id(api_base_url, api_token)
     return user_id, api_base_url, api_token
 
