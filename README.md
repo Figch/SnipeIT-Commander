@@ -12,7 +12,7 @@ Snipey is a command-line tool to interact with the Snipe-IT asset management sys
 ## Pre-requisites 
 
 - Python 3.x
-- Snipe-IT API access with a generated access token
+- Snipe-IT API access with a generated access token (API Version v8.2.0)
 
 
 ## Installation
