@@ -30,6 +30,14 @@ Snipey is a command-line tool to interact with the Snipe-IT asset management sys
   ```
 - Replace `your_snipeit_api_url` and `your_snipeit_api_token` with your actual Snipe-IT instance's API URL and token.
 
+## Configuration
+
+- To check in and out by asset tag rather than asset id, set *asset_by_tag* to true under *preferences* section in `.config`. Default is false. Example:
+  ```
+  [preferences]
+  asset_by_tag = true
+  ```
+
 ## Usage
 
 ```
@@ -42,6 +50,7 @@ python snipey.py [command] [args]
 - `status`: Show the status of all assets
 - `ci <asset_id>`: Check-in an asset
 - `co <asset_id>`: Check-out an asset
+- `getid <asset_tag>`: Show asset id belonging to asset_tag
 
 ### Examples
 
@@ -63,6 +72,11 @@ python snipey.py co 123
 Watch for real-time changes in asset status:
 ```
 python snipey.py watch
+```
+
+Show asset id belonging to asset_tag:
+```
+python snipey.py getid ABC0123
 ```
 
 ## License
