@@ -132,6 +132,20 @@ def watch(api_base_url, api_token):
     except KeyboardInterrupt:
         print("goodybye world")
 
+def getIdByTag(api_base_url, api_token, asset_tag):
+    api_url = f"{api_base_url}/hardware/bytag/{asset_tag}"
+    params = {"deleted": "false"}
+    try:
+        response = requests.get(api_url, headers={"Authorization": f"Bearer {api_token}"}, params=params, verify=False, timeout=2)
+    except:
+        print("Error in request--are you connected to the right network? did you go to the right place in teh .config?")
+        sys.exit(1)
+    if response.status_code == 200:
+        data = response.json()
+        return(data.get('id', 'Unknown ID'))
+    else:
+        print(f"Error: Unable to find asset. Status Code: {response.status_code}, Response: {response.text}, Asset_Tag: {asset_tag}")
+
 def main():
     if len(sys.argv) < 2:
         print("Usage: python snipey.py [watch|status|ci|co] [args]")
@@ -153,6 +167,12 @@ def main():
             print("Usage: python snipey.py checkout <asset_id>")
             sys.exit(1)
         checkout(api_base_url, api_token, sys.argv[2], user_id)
+    elif command == "getid":
+        if len(sys.argv) != 3:
+            print("Usage: python snipey.py getid <asset_tag>")
+            sys.exit(1)
+        id=getIdByTag(api_base_url, api_token, sys.argv[2])
+        print(f"ID: {id}")
     else:
         print("Invalid command")
 
