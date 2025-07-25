@@ -51,6 +51,7 @@ python snipey.py [command] [args]
 - `ci <asset_id>`: Check-in an asset
 - `co <asset_id>`: Check-out an asset
 - `getid <asset_tag>`: Show asset id belonging to asset_tag
+- `getid <asset_id>`: Show asset information
 
 ### Examples
 
@@ -77,6 +78,11 @@ python snipey.py watch
 Show asset id belonging to asset_tag:
 ```
 python snipey.py getid ABC0123
+```
+
+Show asset information:
+```
+python snipey.py show 123
 ```
 
 ## License

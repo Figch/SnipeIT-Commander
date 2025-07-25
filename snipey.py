@@ -6,6 +6,7 @@ import urllib3
 import configparser
 import time
 from datetime import datetime
+import json
 
 # stupid youre not secure error supression nothing to see here
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -153,6 +154,21 @@ def getIdByTag(api_base_url, api_token, asset_tag):
     else:
         print(f"Error: Unable to find asset. Status Code: {response.status_code}, Response: {response.text}, Asset_Tag: {asset_tag}")
 
+
+def show_asset_information(api_base_url, api_token, asset_id):
+    api_url = f"{api_base_url}/hardware/{asset_id}"
+    #data = {"status_id": 2, "checkout_to_type": "user", "assigned_user": user_id}
+    try:
+        response = requests.get(api_url, headers={"Authorization": f"Bearer {api_token}"}, verify=False, timeout=2)
+    except:
+        print("Error in request--are you connected to the right network? did you go to the right place in teh .config?")
+        sys.exit(1)
+    if response.status_code in [200, 201]:
+        data = response.json()
+        print(json.dumps(data, indent=4))
+    else:
+        print(f"Error: Unable to request asset data. Status Code: {response.status_code}, Response: {response.text}")
+
 def main():
     if len(sys.argv) < 2:
         print("Usage: python snipey.py [watch|status|ci|co] [args]")
@@ -166,7 +182,7 @@ def main():
         status(api_base_url, api_token)
     elif command == "ci":
         if len(sys.argv) != 3:
-            print("Usage: python snipey.py checkin <asset_id>")
+            print("Usage: python snipey.py checkin <asset_id/asset_tag>")
             sys.exit(1)
         asset_id=sys.argv[2]
         if asset_by_tag:
@@ -174,7 +190,7 @@ def main():
         checkin(api_base_url, api_token, asset_id, user_id)
     elif command == "co":
         if len(sys.argv) != 3:
-            print("Usage: python snipey.py checkout <asset_id>")
+            print("Usage: python snipey.py checkout <asset_id/asset_tag>")
             sys.exit(1)
         asset_id=sys.argv[2]
         if asset_by_tag:
@@ -186,6 +202,14 @@ def main():
             sys.exit(1)
         id=getIdByTag(api_base_url, api_token, sys.argv[2])
         print(f"ID: {id}")
+    elif command == "show":
+        if len(sys.argv) != 3:
+            print("Usage: python snipey.py show <asset_id/asset_tag>")
+            sys.exit(1)
+        asset_id=sys.argv[2]
+        if asset_by_tag:
+            asset_id=getIdByTag(api_base_url, api_token, asset_id)
+        show_asset_information(api_base_url, api_token, asset_id)
     else:
         print("Invalid command")
 
