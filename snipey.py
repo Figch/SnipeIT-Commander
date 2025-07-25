@@ -169,6 +169,31 @@ def show_asset_information(api_base_url, api_token, asset_id):
     else:
         print(f"Error: Unable to request asset data. Status Code: {response.status_code}, Response: {response.text}")
 
+def users(api_base_url, api_token):
+    request_size=500 #how many to request at once
+
+    api_url = f"{api_base_url}/users"
+
+    last_data_length=request_size
+    page=0
+    while last_data_length==request_size:
+        params = {"limit": request_size, "offset": request_size*page}
+        page+=1
+        try:
+            response = requests.get(api_url, headers={"Authorization": f"Bearer {api_token}"}, params=params, verify=False, timeout=2)
+        except requests.exceptions.ConnectionError:
+            print(f"Error: Unable to connect to {api_base_url}. Please check the URL and your network connection.")
+            sys.exit(1)
+        except Exception as e:
+            print(f"Error in request: {e}")
+            sys.exit(1)
+        if response.status_code == 200:
+            data = response.json()
+            last_data_length=len(data['rows'])
+            for user in data['rows']:
+                print(f"{user.get('id')}: {user.get('name')} username:{user.get('username')}")
+                
+
 def main():
     if len(sys.argv) < 2:
         print("Usage: python snipey.py [watch|status|ci|co] [args]")
@@ -210,6 +235,8 @@ def main():
         if asset_by_tag:
             asset_id=getIdByTag(api_base_url, api_token, asset_id)
         show_asset_information(api_base_url, api_token, asset_id)
+    elif command == "users":
+        users(api_base_url, api_token)
     else:
         print("Invalid command")
 

@@ -52,6 +52,7 @@ python snipey.py [command] [args]
 - `co <asset_id>`: Check-out an asset
 - `getid <asset_tag>`: Show asset id belonging to asset_tag
 - `getid <asset_id>`: Show asset information
+- `user`: List all users
 
 ### Examples
 
@@ -83,6 +84,11 @@ python snipey.py getid ABC0123
 Show asset information:
 ```
 python snipey.py show 123
+```
+
+List all users:
+```
+python snipey.py users
 ```
 
 ## License
