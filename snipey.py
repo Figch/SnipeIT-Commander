@@ -34,7 +34,10 @@ def read_config():
     # remove the endpoint part from the base url
     api_base_url = api_base_url.rsplit('/', 1)[0]
     user_id = get_user_id(api_base_url, api_token)
-    return user_id, api_base_url, api_token
+
+    asset_by_tag = config.get('preferences', 'asset_by_tag', fallback=False) #find asset by tag (true) or by asset id (false)
+
+    return user_id, api_base_url, api_token,asset_by_tag
 
 def checkin(api_base_url, api_token, asset_id, user_id):
     api_url = f"{api_base_url}/hardware/{asset_id}/checkin"
@@ -142,7 +145,11 @@ def getIdByTag(api_base_url, api_token, asset_tag):
         sys.exit(1)
     if response.status_code == 200:
         data = response.json()
-        return(data.get('id', 'Unknown ID'))
+        id = data.get('id')
+        if id is None:
+            print("Error: Unable to find asset by tag")
+            sys.exit(1)
+        return(id)
     else:
         print(f"Error: Unable to find asset. Status Code: {response.status_code}, Response: {response.text}, Asset_Tag: {asset_tag}")
 
@@ -151,7 +158,7 @@ def main():
         print("Usage: python snipey.py [watch|status|ci|co] [args]")
         print("ci and co are short for checkin and checkout")
         sys.exit(1)
-    user_id, api_base_url, api_token = read_config()
+    user_id, api_base_url, api_token, asset_by_tag = read_config()
     command = sys.argv[1]
     if command == "watch":
         watch(api_base_url, api_token)
@@ -161,12 +168,18 @@ def main():
         if len(sys.argv) != 3:
             print("Usage: python snipey.py checkin <asset_id>")
             sys.exit(1)
-        checkin(api_base_url, api_token, sys.argv[2], user_id)
+        asset_id=sys.argv[2]
+        if asset_by_tag:
+            asset_id=getIdByTag(api_base_url, api_token, asset_id)
+        checkin(api_base_url, api_token, asset_id, user_id)
     elif command == "co":
         if len(sys.argv) != 3:
             print("Usage: python snipey.py checkout <asset_id>")
             sys.exit(1)
-        checkout(api_base_url, api_token, sys.argv[2], user_id)
+        asset_id=sys.argv[2]
+        if asset_by_tag:
+            asset_id=getIdByTag(api_base_url, api_token, asset_id)
+        checkout(api_base_url, api_token, asset_id, user_id)
     elif command == "getid":
         if len(sys.argv) != 3:
             print("Usage: python snipey.py getid <asset_tag>")
