@@ -1,0 +1,6 @@
+[api]
+url = https://snipe.example.com/api/v1/<endpoint>
+access_token = ACCESSTOKENHERE
+
+[preferences]
+asset_by_tag = true
