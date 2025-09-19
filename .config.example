@@ -7,13 +7,13 @@ asset_by_tag = true
 
 
 [overdue]
-company_name = Akademie
+company_name = Company
 ignore_checkout_names = 
 ignore_tags =
 ignore_model_names =
 ignore_model_names_contains = 
 request_size = 500
 show_assets = 1000
-email_checkout_names = Test Eins,Testuser Zwei
+email_checkout_names = Test Eins,Testuser Zwei,Vorname Nachname
 email_subject = Inventur
 email_domain = example.com
