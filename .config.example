@@ -4,3 +4,16 @@ access_token = ACCESSTOKENHERE
 
 [preferences]
 asset_by_tag = true
+
+
+[overdue]
+company_name = Akademie
+ignore_checkout_names = 
+ignore_tags =
+ignore_model_names =
+ignore_model_names_contains = 
+request_size = 500
+show_assets = 1000
+email_checkout_names = Test Eins,Testuser Zwei
+email_subject = Inventur
+email_domain = example.com
