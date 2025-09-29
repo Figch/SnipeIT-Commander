@@ -60,7 +60,7 @@ def auditOverdue(api_base_url, api_token):
     api_url = f"{api_base_url}/hardware/audit/overdue"
 
     config = configparser.ConfigParser()
-    config.read('.config')
+    config.read('.config',encoding="utf8")
     company_name = config.get('overdue', 'company_name', fallback='')
     ignore_checkout_names = config.get('overdue', 'ignore_checkout_names', fallback='').split(',')
     ignore_checkout_names = [x for x in ignore_checkout_names if len(x)>0]
@@ -78,7 +78,7 @@ def auditOverdue(api_base_url, api_token):
     email_domain = config.get('overdue', 'email_domain', fallback='example.com')
 
     
-
+    
 
     last_data_length=request_size
     page=0
