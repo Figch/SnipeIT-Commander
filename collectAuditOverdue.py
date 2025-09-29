@@ -211,14 +211,21 @@ def main():
             text+="</ul>"
             text+="<br>Besten Dank"
 
-            splitname=name.split(' ')
-            splitname=[x.replace('ä','ae').replace('Ä','Ae').replace('ü','ue').replace('Ü','Ue').replace('ö','oe').replace('Ö','Oe').replace('ß','ss') for x in splitname]
-            assert len(splitname)==2,"Cannot create email from name!"
-            
 
+            
             outlook = win32.Dispatch('outlook.application')
             mail = outlook.CreateItem(0)
-            mail.To = splitname[0].lower()+"."+splitname[1].lower()+"@"+email_domain
+
+            splitname=name.split(' ')
+            splitname=[x.replace('ä','ae').replace('Ä','Ae').replace('ü','ue').replace('Ü','Ue').replace('ö','oe').replace('Ö','Oe').replace('ß','ss') for x in splitname]
+            assert len(splitname)==2 or len(splitname)==1,"Cannot create email from name!"
+            if len(splitname)==2:
+                mail.To = splitname[0].lower()+"."+splitname[1].lower()+"@"+email_domain
+            elif len(splitname)==1:
+                mail.To = splitname[0].lower()+"@"+email_domain
+
+
+            
             mail.Subject = email_subject
             mail.HtmlBody = text
             mail.Display(False)
