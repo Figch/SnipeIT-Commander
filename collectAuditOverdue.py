@@ -52,6 +52,8 @@ def read_config():
 
 def auditOverdue(api_base_url, api_token):
     allOverdueText=[] #array of strings
+    allOverdueCSV=[]
+    allOverdueCost=[] #to sort assets
     overdueAssets=[]
     askConfirmationAssets={}
 
@@ -165,10 +167,16 @@ def auditOverdue(api_base_url, api_token):
                     lastchange=max(last_audit_obj,last_checkin_obj,last_checkout_obj)
                     notTouchedDays=(datetime.now()-lastchange).days
 
-                    asset_status=asset.get('status_label').get('status_meta') 
+                    asset_status=asset.get('status_label').get('status_meta')
+
+                    purchase_cost = asset.get('purchase_cost')
+                    if purchase_cost is None:
+                        purchase_cost="0"
+                    purchase_cost=purchase_cost.replace('.','').replace(',','.')
+                    purchase_cost=float(purchase_cost)
 
 
-                    text="Tag: "+asset_tag+" \""+asset_name+"\" "+manufacturer_name+" "+model_number
+                    text="Tag: "+asset_tag+" \""+asset_name+"\" "+manufacturer_name+" "+model_number+" "+str(purchase_cost)+"€"
                     if assigned_to!='':
                         text+=" checked out to: "+assigned_to
                         #print(f"Tag: {asset_tag} \"{asset_name}\" {manufacturer_name} {model_number} assigned to: {assigned_to}")
@@ -177,8 +185,12 @@ def auditOverdue(api_base_url, api_token):
                     if asset_status=='archived' or asset_status=='pending':
                         text+=". Status="+str(asset_status)
 
+                    csvrow=asset_tag+";\""+asset_name+"\";\""+manufacturer_name+"\";\""+model_number+"\";"+str(purchase_cost)+"€;\""+assigned_to+"\""
+
                     print(text)
                     allOverdueText.append(text)
+                    allOverdueCSV.append(csvrow)
+                    allOverdueCost.append(purchase_cost)
 
                     if assigned_to != '' and assigned_to in email_checkout_names: #checked out to something/someone to be emailed
                         if assigned_to not in askConfirmationAssets:
@@ -189,15 +201,24 @@ def auditOverdue(api_base_url, api_token):
         else:
             print(f"Error: Unable to retrieve assets. Status Code: {response.status_code}")
 
-    return allOverdueText,askConfirmationAssets,email_subject,email_domain
+    allOverdueCSV = [x for _, x in sorted(zip(allOverdueCost, allOverdueCSV))]
+    allOverdueCSV.reverse()
+
+    return allOverdueText,allOverdueCSV,askConfirmationAssets,email_subject,email_domain
 
 def main():
     user_id, api_base_url, api_token = read_config()
-    allOverdue,askConfirmationAssets,email_subject,email_domain=auditOverdue(api_base_url, api_token)
+    allOverdue,allOverdueCSV,askConfirmationAssets,email_subject,email_domain=auditOverdue(api_base_url, api_token)
     with open("overdue.txt", "w") as f:
         for l in allOverdue:
             f.write(l+"\n")
     print(str(len(allOverdue))+" Assets overdue for audit")
+
+
+    with open("overdue.csv", "w") as f:
+        f.write("asset_tag;asset_name;manufacturer_name;model_number;purchase_cost;assigned_to\n")
+        for l in allOverdueCSV:
+            f.write(l+"\n")
 
     if args.email:
         for name in askConfirmationAssets:
